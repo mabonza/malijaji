@@ -56,6 +56,23 @@ Delete your test responses in Supabase (**Table Editor → responses**) before s
 Supabase → **Table Editor → responses → Export → CSV**. Opens directly in Excel, SPSS or R.
 For analysis, filter to `status = completed`; the other rows let you report how many people were screened out.
 
+To turn that CSV into an easy-to-read Excel file, run:
+
+```bash
+npm run excel
+```
+
+It picks up the newest `responses_rows*.csv` in your Downloads folder (or pass a path: `npm run excel -- "C:\path\file.csv"`)
+and saves `Survey responses <date>.xlsx` next to it, with three sheets:
+
+- **Answers** – one column per respondent, with the full question text and answer labels ("4 – Agree").
+- **Data** – one row per respondent with plain values (Likert as 1–5) for formulas, SPSS or R; hover a column code to see its question.
+- **Codebook** – what every column code means and its possible answers.
+
+For a quick summary (response counts, respondent profile, influencer vs celebrity averages per section,
+and the Section G comparisons), paste [`supabase/report.sql`](supabase/report.sql) into the SQL Editor,
+highlight one query and click **Run**.
+
 ## Changing questions
 
 All wording lives in [`src/survey/questions.ts`](src/survey/questions.ts). If you add or rename an item,

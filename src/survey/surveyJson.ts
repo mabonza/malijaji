@@ -1,6 +1,10 @@
 import { COLUMNS, COMPARISON, DEMOGRAPHICS, LIKERT, LIKERT_SECTIONS, SCREENING, type Choice } from './questions'
 
+export const SURVEY_TITLE = 'Social Media Influencers vs Traditional Celebrities in Beauty Product Endorsements'
+export const SURVEY_SUBTITLE = 'Vaal University of Technology · Master of Marketing Management'
+
 const INTRO_HTML = `
+<div class="letter">
 <p>Dear Respondent,</p>
 <p>My name is Maledjadji Angy Mabogoane, a Master's student in Marketing Management at the Vaal University of
 Technology. I am conducting a research study entitled <strong>“A Comparative Study of the Effectiveness of Social Media
@@ -12,16 +16,33 @@ academic purposes. You are not required to provide your name or any information 
 <p>The questionnaire will take approximately 8–10 minutes to complete. There are no right or wrong answers. Please
 answer each question honestly based on your own experiences and opinions.</p>
 <p>Thank you for participating in this study.</p>
+</div>
 `
 
 const LIKERT_INSTRUCTIONS_HTML = `
+<div class="callout">
 <p>The following sections ask about your perceptions of beauty products endorsed by social media influencers and
 traditional celebrities. For each statement, please indicate the extent to which you agree or disagree.</p>
 <p>Where the questionnaire refers to a <strong>social media influencer</strong>, think of an influencer you have seen
 endorsing a beauty product.</p>
 <p>Where the questionnaire refers to a <strong>traditional celebrity</strong>, think of an actor, musician, television
 personality, athlete, model, or other well-known public figure you have seen endorsing a beauty product.</p>
+</div>
 `
+
+// Ending screens share one layout: a round icon, a heading and a short message.
+const ending = (icon: 'check' | 'info', heading: string, message: string) => `
+<div class="ending">
+  <div class="ending__icon ending__icon--${icon}" aria-hidden="true">
+    ${
+      icon === 'check'
+        ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+        : '<svg viewBox="0 0 24 24"><path d="M12 8v.01M12 11v5"/></svg>'
+    }
+  </div>
+  <h3>${heading}</h3>
+  <p>${message}</p>
+</div>`
 
 const radio = (q: Choice) => ({
   type: 'radiogroup',
@@ -35,11 +56,8 @@ const radio = (q: Choice) => ({
 const SCREENED_OUT = SCREENING.map((q) => `{${q.code}} = 'No'`).join(' or ')
 
 export const surveyJson = {
-  title: 'Social Media Influencers vs Traditional Celebrities in Beauty Product Endorsements',
-  description: 'Vaal University of Technology · Master of Marketing Management research questionnaire',
-  showProgressBar: true,
-  progressBarLocation: 'aboveheader',
-  progressBarType: 'pages',
+  // The title and progress are drawn by App.tsx, so SurveyJS only renders the pages themselves.
+  widthMode: 'responsive',
   showQuestionNumbers: 'off',
   questionErrorLocation: 'bottom',
   completeText: 'Submit',
@@ -100,21 +118,25 @@ export const surveyJson = {
     { type: 'complete', expression: "{consent} = 'No, I do not wish to participate'" },
     { type: 'complete', expression: SCREENED_OUT },
   ],
-  completedHtml: `
-    <h3>Thank you</h3>
-    <p>Thank you for taking the time to complete this questionnaire. Your responses will contribute to understanding
+  completedHtml: ending(
+    'check',
+    'Thank you',
+    `Thank you for taking the time to complete this questionnaire. Your responses will contribute to understanding
     the comparative effectiveness of social media influencers and traditional celebrities in beauty product
-    endorsements in South Africa.</p>`,
+    endorsements in South Africa.`,
+  ),
   completedHtmlOnCondition: [
     {
       expression: "{consent} = 'No, I do not wish to participate'",
-      html: '<h3>Thank you</h3><p>You have chosen not to participate. You may now close this page.</p>',
+      html: ending('info', 'Thank you', 'You have chosen not to participate. You may now close this page.'),
     },
     {
       expression: SCREENED_OUT,
-      html: `<h3>Thank you for your interest</h3>
-        <p>Unfortunately you do not meet the criteria for this study, so the questionnaire ends here.
-        We appreciate your time.</p>`,
+      html: ending(
+        'info',
+        'Thank you for your interest',
+        'Unfortunately you do not meet the criteria for this study, so the questionnaire ends here. We appreciate your time.',
+      ),
     },
   ],
 }
